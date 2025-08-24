@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌡️ Temperature Monitor</h1>
+            <p class="subtitle">Real-time temperature monitoring dashboard</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Current Temperature Display -->
+            <div class="card current-temp">
+                <h2>Current Temperature</h2>
+                <div class="temp-display">
+                    <span id="current-temp">--</span>
+                    <span class="unit" id="temp-unit">°C</span>
+                </div>
+                <div class="temp-secondary">
+                    <span id="current-temp-f">--°F</span>
+                </div>
+                <div class="last-updated">
+                    Last updated: <span id="last-updated">Never</span>
+                </div>
+                <div class="unit-toggle">
+                    <button onclick="toggleUnit()" id="unit-btn">Switch to °F</button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card stats">
+                <h2>Statistics</h2>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Min</span>
+                        <span class="stat-value" id="min-temp">--°C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Max</span>
+                        <span class="stat-value" id="max-temp">--°C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average</span>
+                        <span class="stat-value" id="avg-temp">--°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card chart-container">
+                <h2>Temperature History</h2>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+
+            <!-- Status Display -->
+            <div class="card status-card">
+                <h2>System Status</h2>
+                <div class="status-display">
+                    <div class="status-item">
+                        <span class="status-label">Connection</span>
+                        <span class="status-value" id="connection-status">Waiting for data...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
