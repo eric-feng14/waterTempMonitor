@@ -1,10 +1,15 @@
 # test/api/index.py
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import os, json
+import os, json, hmac, hashlib, time
+from datetime import datetime
 
 app = Flask(__name__, static_folder="../static", template_folder="../templates")
 CORS(app)
+
+SIGNING_SECRET = (os.getenv("SIGNING_SECRET") or "").encode()
+MAX_SKEW_SECONDS = 300  # 5 minutes
+
 
 # --- Views / routes (migrate yours here) ---
 @app.route("/")
@@ -29,16 +34,44 @@ def temperature():
     }
     return jsonify({"current": curr, "history": temperature_data, "stats": stats})
 
-# --- Hardened ingest (device will post here). You will add HMAC verification in step 5. ---
+def _parse_timestamp(ts_str: str) -> float:
+    # allow epoch or ISO 8601
+    if not ts_str:
+        return 0.0
+    try:
+        if ts_str.replace(".","",1).isdigit():
+            return float(ts_str)
+        return datetime.fromisoformat(ts_str.replace("Z","")).timestamp()
+    except Exception:
+        return 0.0
+
+def verify_signature(raw_body: bytes, timestamp: str, signature: str) -> bool:
+    if not SIGNING_SECRET:
+        return False
+    ts = _parse_timestamp(timestamp)
+    if ts == 0.0 or abs(time.time() - ts) > MAX_SKEW_SECONDS:
+        return False
+    msg = timestamp.encode() + b"." + raw_body
+    expected = hmac.new(SIGNING_SECRET, msg, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
 @app.route("/api/ingest", methods=["POST"])
 def ingest():
-    payload = request.get_json(force=True, silent=True) or {}
+    raw = request.get_data() or b"{}"
+    timestamp = request.headers.get("X-Timestamp", "")
+    signature = request.headers.get("X-Signature", "")
+    device_id = request.headers.get("X-Device-Id", "unknown")
+
+    if not verify_signature(raw, timestamp, signature):
+        return jsonify({"ok": False, "error": "invalid signature"}), 401
+
     try:
+        payload = json.loads(raw.decode("utf-8"))
         value = float(payload.get("value"))
+        ts = payload.get("timestamp") or datetime.utcnow().isoformat()
     except Exception:
         return jsonify({"ok": False, "error": "bad payload"}), 400
-    ts = payload.get("timestamp") or __import__("datetime").datetime.utcnow().isoformat()
-    device_id = payload.get("deviceId", "unknown")
+
     temperature_data.append({"t": ts, "c": value, "device": device_id})
     del temperature_data[:-MAX_READINGS]
     return jsonify({"ok": True, "count": len(temperature_data)})
