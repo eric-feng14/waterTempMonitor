@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get install -y python3-pip python3-venv python3-dev git
 sudo raspi-config nonint do_spi 0
 
-pip3 install --break-system-packages spidev requests python-dotenv
+pip3 install spidev requests python-dotenv
 
 sudo cp "$DEVICE_DIR/temp-agent.service" /etc/systemd/system/temp-agent.service
 sudo systemctl daemon-reload
