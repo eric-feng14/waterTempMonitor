@@ -1,0 +1,19 @@
+[Unit]
+Description=Temperature Agent (posts readings to Vercel)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/church/device
+EnvironmentFile=/home/pi/church/device/.env
+ExecStart=/usr/bin/python3 /home/pi/church/device/pi_client.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
