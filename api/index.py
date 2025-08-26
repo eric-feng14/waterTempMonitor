@@ -12,7 +12,7 @@ MAX_SKEW_SECONDS = 300  # 5 minutes
 
 
 # --- Views / routes (migrate yours here) ---
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'] )
 def home():
     return render_template("index.html")
 
