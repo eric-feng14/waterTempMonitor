@@ -75,3 +75,32 @@ def ingest():
     temperature_data.append({"t": ts, "c": value, "device": device_id})
     del temperature_data[:-MAX_READINGS]
     return jsonify({"ok": True, "count": len(temperature_data)})
+
+
+@app.route('/api/temperature', methods=['POST'])
+def receive_temperature():
+    """Endpoint to receive temperature data"""
+    try:
+        data = request.get_json()
+        temp_c = data.get('temperature')
+        
+        if temp_c is not None:
+            # Add timestamp and store the reading
+            reading = {
+                'temperature': float(temp_c),
+                'timestamp': datetime.now().isoformat(),
+                'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
+            }
+            
+            temperature_data.append(reading)
+            
+            # Keep only the last MAX_READINGS
+            if len(temperature_data) > MAX_READINGS:
+                temperature_data.pop(0)
+            
+            return jsonify({'status': 'success', 'message': 'Temperature recorded'})
+        else:
+            return jsonify({'status': 'error', 'message': 'No temperature data provided'}), 400
+    
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
