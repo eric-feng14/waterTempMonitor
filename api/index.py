@@ -123,10 +123,11 @@ def receive_temperature():
             payload = json.loads(raw.decode("utf-8"))
             value = float(payload.get("temperature"))
             ts = payload.get("timestamp") or datetime.utcnow().isoformat()
+            temp_f = float(value) * 9/5 + 32  # Also store Fahrenheit
         except Exception:
             return jsonify({"ok": False, "error": "bad payload"}), 400
     
-        temperature_data.append({"t": ts, "c": value, "device": device_id, "timestamp":ts})
+        temperature_data.append({"t": ts, "c": value, "device": device_id, "timestamp":ts, "temperature":value,"temp_f":temp_f})
         del temperature_data[:-MAX_READINGS]
         return jsonify({"status": "success", "content of record": temperature_data,"message": "Temperature recorded" })
         # return jsonify({"ok": True, "count": len(temperature_data)})
