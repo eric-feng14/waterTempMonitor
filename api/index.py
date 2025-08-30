@@ -81,7 +81,7 @@ def ingest():
 def receive_temperature():
     """Endpoint to receive temperature data"""
     try:
-        # data = request.get_json()
+        data = request.get_json()
         temp_c = data.get('temperature')
         reading = {}
         if temp_c is not None:
