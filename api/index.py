@@ -82,15 +82,15 @@ def receive_temperature():
     """Endpoint to receive temperature data"""
     try:
         # data = request.get_json()
-        # temp_c = data.get('temperature')
-        
-        # if temp_c is not None:
-        #     # Add timestamp and store the reading
-        #     reading = {
-        #         'temperature': float(temp_c),
-        #         'timestamp': datetime.now().isoformat(),
-        #         'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
-        #     }
+        temp_c = data.get('temperature')
+        reading = {}
+        if temp_c is not None:
+            # Add timestamp and store the reading
+            reading = {
+                'temperature': float(temp_c),
+                'timestamp': datetime.now().isoformat(),
+                'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
+            }
             
         #     temperature_data.append(reading)
             
@@ -116,7 +116,7 @@ def receive_temperature():
         except Exception:
             return jsonify({"ok": False, "error": "bad payload"}), 400
     
-        temperature_data.append({"t": ts, "c": value, "device": device_id})
+        temperature_data.append({"t": ts, "c": value, "device": device_id,current:reading})
         del temperature_data[:-MAX_READINGS]
         return jsonify({"ok": True, "content of record": temperature_data})
         # return jsonify({"ok": True, "count": len(temperature_data)})
