@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchTemperatureData();
     
     // Auto-refresh every 5 seconds
-    //setInterval(fetchTemperatureData, 1000);
+    setInterval(fetchTemperatureData, 1000);
 });
 
 // Initialize the temperature chart
@@ -238,4 +238,5 @@ async function sendTemperatureReading(temperature) {
         return false;
     }
 }
+
 
