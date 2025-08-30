@@ -24,6 +24,7 @@ MAX_READINGS = 50
 def temperature():
     if not temperature_data:
         return jsonify({"current": None, "history": [], "stats": None})
+
     curr = temperature_data[-1]["c"]
     vals = [d["c"] for d in temperature_data]
     stats = {
@@ -32,7 +33,16 @@ def temperature():
         "avg": sum(vals) / len(vals),
         "count": len(vals),
     }
-    return jsonify({"current": curr, "history": temperature_data, "stats": stats})
+
+    reading = {}
+    if curr is not None:
+        # Add timestamp and store the reading
+        reading = {
+            'temperature': float(curr),
+            'timestamp': datetime.now().isoformat(),
+            'temp_f': float(curr) * 9/5 + 32  # Also store Fahrenheit
+        }
+    return jsonify({"current": reading, "history": temperature_data, "stats": stats})
 
 def _parse_timestamp(ts_str: str) -> float:
     # allow epoch or ISO 8601
@@ -81,16 +91,16 @@ def ingest():
 def receive_temperature():
     """Endpoint to receive temperature data"""
     try:
-        data = request.get_json()
-        temp_c = data.get('temperature')
-        reading = {}
-        if temp_c is not None:
-            # Add timestamp and store the reading
-            reading = {
-                'temperature': float(temp_c),
-                'timestamp': datetime.now().isoformat(),
-                'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
-            }
+        # data = request.get_json()
+        # temp_c = data.get('temperature')
+        # reading = {}
+        # if temp_c is not None:
+        #     # Add timestamp and store the reading
+        #     reading = {
+        #         'temperature': float(temp_c),
+        #         'timestamp': datetime.now().isoformat(),
+        #         'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
+        #     }
             
         #     temperature_data.append(reading)
             
