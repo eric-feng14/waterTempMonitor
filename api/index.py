@@ -81,26 +81,43 @@ def ingest():
 def receive_temperature():
     """Endpoint to receive temperature data"""
     try:
-        data = request.get_json()
-        temp_c = data.get('temperature')
+        # data = request.get_json()
+        # temp_c = data.get('temperature')
         
-        if temp_c is not None:
-            # Add timestamp and store the reading
-            reading = {
-                'temperature': float(temp_c),
-                'timestamp': datetime.now().isoformat(),
-                'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
-            }
+        # if temp_c is not None:
+        #     # Add timestamp and store the reading
+        #     reading = {
+        #         'temperature': float(temp_c),
+        #         'timestamp': datetime.now().isoformat(),
+        #         'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
+        #     }
             
-            temperature_data.append(reading)
+        #     temperature_data.append(reading)
             
-            # Keep only the last MAX_READINGS
-            if len(temperature_data) > MAX_READINGS:
-                temperature_data.pop(0)
+        #     # Keep only the last MAX_READINGS
+        #     if len(temperature_data) > MAX_READINGS:
+        #         temperature_data.pop(0)
             
-            return jsonify({'status': 'success', 'message': 'Temperature recorded'})
-        else:
-            return jsonify({'status': 'error', 'message': 'No temperature data provided'}), 400
+        #     return jsonify({'status': 'success', 'message': 'Temperature recorded'})
+        # else:
+        #     return jsonify({'status': 'error', 'message': 'No temperature data provided'}), 400
+        raw = request.get_data() or b"{}"
+        timestamp = request.headers.get("X-Timestamp", "")
+        signature = request.headers.get("X-Signature", "")
+        device_id = request.headers.get("X-Device-Id", "unknown")
     
+        #if not verify_signature(raw, timestamp, signature):
+            #return jsonify({"ok": False, "error": "invalid signature"}), 401
+    
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+            value = float(payload.get("temperature"))
+            ts = payload.get("timestamp") or datetime.utcnow().isoformat()
+        except Exception:
+            return jsonify({"ok": False, "error": "bad payload"}), 400
+    
+        temperature_data.append({"t": ts, "c": value, "device": device_id})
+        del temperature_data[:-MAX_READINGS]
+        return jsonify({"ok": True, "count": len(temperature_data)})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
