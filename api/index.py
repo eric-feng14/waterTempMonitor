@@ -94,9 +94,9 @@ def receive_temperature():
             
             temperature_data.append(reading)
             
-            # # Keep only the last MAX_READINGS
-            # if len(temperature_data) > MAX_READINGS:
-            #     temperature_data.pop(0)
+            # Keep only the last MAX_READINGS
+            if len(temperature_data) > MAX_READINGS:
+                temperature_data.pop(0)
             
             return jsonify({'status': 'success', 'message': 'Temperature recorded'})
         else:
