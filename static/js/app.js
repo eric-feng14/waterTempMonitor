@@ -110,7 +110,8 @@ function updateCurrentTemperature(current) {
         document.getElementById('current-temp-f').textContent = `${tempC.toFixed(1)}°C`;
     }
     
-    document.getElementById('last-updated').textContent = formatTime(timestamp);
+//    document.getElementById('last-updated').textContent = formatTime(timestamp);
+    document.getElementById('last-updated').textContent = timestamp;
     
     // Update temperature color based on value
     const tempDisplay = document.querySelector('.temp-display #current-temp');
@@ -239,6 +240,7 @@ async function sendTemperatureReading(temperature) {
         return false;
     }
 }
+
 
 
 
