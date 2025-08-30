@@ -205,7 +205,7 @@ function getTemperatureClass(tempC) {
 // Format timestamp for display
 function formatTime(date) {
     const now = new Date();
-    const diffMs = now - date;
+    const diffMs = now - Date.parse(date);
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
     
@@ -238,5 +238,6 @@ async function sendTemperatureReading(temperature) {
         return false;
     }
 }
+
 
 
