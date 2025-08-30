@@ -87,7 +87,7 @@ def ingest():
     return jsonify({"ok": True, "count": len(temperature_data)})
 
 
-@app.route('/api/temperature', methods=['POST'])
+@app.route('/api/receive_temperature', methods=['POST'])
 def receive_temperature():
     """Endpoint to receive temperature data"""
     try:
