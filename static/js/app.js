@@ -87,7 +87,7 @@ async function fetchTemperatureData() {
         } else {
             document.getElementById('current-temp').textContent = '--';
             document.getElementById('current-temp-f').textContent = '--°F';
-            document.getElementById('last-updated').textContent = 'No data available';
+            document.getElementById('current-time').textContent = 'No data available';
             updateStatus('waiting', 0);
         }
     } catch (error) {
@@ -110,7 +110,7 @@ function updateCurrentTemperature(current) {
         document.getElementById('current-temp-f').textContent = `${tempC.toFixed(1)}°C`;
     }
     
-    document.getElementById('last-updated').textContent = timestamp;
+    document.getElementById('current-time').textContent = timestamp;
     
     // Update temperature color based on value
     const tempDisplay = document.querySelector('.temp-display #current-temp');
