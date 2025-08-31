@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os, json, hmac, hashlib, time
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = Flask(__name__, static_folder="../static", template_folder="../templates")
 CORS(app)
@@ -50,7 +50,7 @@ def receive_temperature():
             # Add timestamp and store the reading
             reading = {
                 'temperature': float(temp_c), #same as value
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'temp_f': float(temp_c) * 9/5 + 32,
             }
             
