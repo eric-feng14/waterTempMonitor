@@ -65,28 +65,6 @@ def verify_signature(raw_body: bytes, timestamp: str, signature: str) -> bool:
     expected = hmac.new(SIGNING_SECRET, msg, hashlib.sha256).hexdigest()
     return hmac.compare_digest(expected, signature)
 
-@app.route("/api/ingest", methods=["POST"])
-def ingest():
-    raw = request.get_data() or b"{}"
-    timestamp = request.headers.get("X-Timestamp", "")
-    signature = request.headers.get("X-Signature", "")
-    device_id = request.headers.get("X-Device-Id", "unknown")
-
-    #if not verify_signature(raw, timestamp, signature):
-        #return jsonify({"ok": False, "error": "invalid signature"}), 401
-
-    try:
-        payload = json.loads(raw.decode("utf-8"))
-        value = float(payload.get("value"))
-        ts = payload.get("timestamp") or datetime.utcnow().isoformat()
-    except Exception:
-        return jsonify({"ok": False, "error": "bad payload"}), 400
-
-    temperature_data.append({"t": ts, "c": value, "device": device_id})
-    del temperature_data[:-MAX_READINGS]
-    return jsonify({"ok": True, "count": len(temperature_data)})
-
-
 @app.route('/api/receive_temperature', methods=['POST'])
 def receive_temperature():
     """Endpoint to receive temperature data"""
