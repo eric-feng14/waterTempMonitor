@@ -34,7 +34,7 @@ def temperature():
         # Add timestamp and store the reading
         reading = {
             'temperature': float(curr),
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'temp_f': float(curr) * 9/5 + 32  # Also store Fahrenheit
         }
     return jsonify({"current": reading, "history": temperature_data, "stats": stats})
