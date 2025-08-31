@@ -1,3 +1,4 @@
 venv/
-device/.env
-device/queue.jsonl
+.env
+__pycache__/
+.DS_Store
