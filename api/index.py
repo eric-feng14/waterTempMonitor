@@ -20,8 +20,8 @@ def temperature():
     if not temperature_data:
         return jsonify({"current": None, "history": [], "stats": None})
 
-    curr = temperature_data[-1]["c"]
-    vals = [d["c"] for d in temperature_data]
+    curr = temperature_data[-1]["temperature"]
+    vals = [d["temperature"] for d in temperature_data]
     stats = {
         "min": min(vals),
         "max": max(vals),
@@ -49,10 +49,9 @@ def receive_temperature():
         if temp_c is not None:
             # Add timestamp and store the reading
             reading = {
-                'c': float(temp_c),
-                # 'timestamp': datetime.now().isoformat(),
+                'temperature': float(temp_c), #same as value
+                'timestamp': datetime.now().isoformat(),
                 'temp_f': float(temp_c) * 9/5 + 32,
-                't': datetime.now().isoformat()
             }
             
             temperature_data.append(reading)
