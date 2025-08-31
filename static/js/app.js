@@ -202,28 +202,3 @@ function getTemperatureClass(tempC) {
     return 'temp-hot';
 }
 
-// Send temperature reading to server (for integration with sensor)
-async function sendTemperatureReading(temperature) {
-    try {
-        const response = await fetch('/api/temperature', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                temperature: temperature
-            })
-        });
-        
-        const result = await response.json();
-        return result.status === 'success';
-    } catch (error) {
-        console.error('Error sending temperature reading:', error);
-        return false;
-    }
-}
-
-
-
-
-
