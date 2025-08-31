@@ -77,8 +77,7 @@ def receive_temperature():
         except Exception:
             return jsonify({"ok": False, "error": "bad payload"}), 400
     
-        # temperature_data.append({"t": ts, "c": value, "device": device_id, "timestamp":ts, "temperature":value,"temp_f":temp_f})
-        temperature_data.append({"timestamp": ts, "c": value, "temp_f": temp_f, "device": device_id})
+        temperature_data.append({"t": ts, "c": value, "device": device_id, "timestamp":ts, "temperature":value,"temp_f":temp_f})
         del temperature_data[:-MAX_READINGS]
         return jsonify({"status": "success", "content of record": temperature_data,"message": "Temperature recorded" })
         # return jsonify({"ok": True, "count": len(temperature_data)})
