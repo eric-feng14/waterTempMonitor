@@ -1,3 +1,4 @@
+#Run this file on the raspberry pi!
 import spidev
 import time
 import requests

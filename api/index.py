@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import os, json, hmac, hashlib, time
 from datetime import datetime, timezone
 
 app = Flask(__name__, static_folder="../static", template_folder="../templates")
@@ -64,25 +63,5 @@ def receive_temperature():
         else:
             return jsonify({'status': 'error', 'message': 'No temperature data provided'}), 400
         
-        # data = request.get_json()
-
-
-        # raw = request.get_data() or b"{}"
-        # timestamp = request.headers.get("X-Timestamp", "")
-        # signature = request.headers.get("X-Signature", "")
-        # device_id = request.headers.get("X-Device-Id", "unknown")
-    
-        # try:
-        #     payload = json.loads(raw.decode("utf-8"))
-        #     value = float(payload.get("temperature"))
-        #     ts = payload.get("timestamp") or datetime.utcnow().isoformat()
-        #     temp_f = float(value) * 9/5 + 32  # Also store Fahrenheit
-        # except Exception:
-        #     return jsonify({"ok": False, "error": "bad payload"}), 400
-    
-        # temperature_data.append({"t": ts, "c": value, "device": device_id, "timestamp":ts, "temperature":value,"temp_f":temp_f})
-        # del temperature_data[:-MAX_READINGS]
-        # return jsonify({"status": "success", "message": "Temperature recorded" })
-        # return jsonify({"ok": True, "count": len(temperature_data)})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
