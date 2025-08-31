@@ -15,8 +15,9 @@ import random
 import math
 
 # Flask server configuration
-FLASK_SERVER_URL = "http://localhost:5000"
-API_ENDPOINT = f"{FLASK_SERVER_URL}/api/temperature"
+#FLASK_SERVER_URL = "http://localhost:5000"
+FLASK_SERVER_URL = "https://new-church.vercel.app/"
+API_ENDPOINT = f"{FLASK_SERVER_URL}/api/receive_temperature"
 
 # Global variables
 running = True
