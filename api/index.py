@@ -1,4 +1,3 @@
-# test/api/index.py
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os, json, hmac, hashlib, time
@@ -7,12 +6,8 @@ from datetime import datetime
 app = Flask(__name__, static_folder="../static", template_folder="../templates")
 CORS(app)
 
-SIGNING_SECRET = (os.getenv("SIGNING_SECRET") or "").encode()
-MAX_SKEW_SECONDS = 300  # 5 minutes
-
-
 # --- Views / routes (migrate yours here) ---
-@app.route("/", methods=['GET', 'POST'] )
+@app.route("/", methods=['GET'] )
 def home():
     return render_template("index.html")
 
@@ -44,27 +39,6 @@ def temperature():
         }
     return jsonify({"current": reading, "history": temperature_data, "stats": stats})
 
-def _parse_timestamp(ts_str: str) -> float:
-    # allow epoch or ISO 8601
-    if not ts_str:
-        return 0.0
-    try:
-        if ts_str.replace(".","",1).isdigit():
-            return float(ts_str)
-        return datetime.fromisoformat(ts_str.replace("Z","")).timestamp()
-    except Exception:
-        return 0.0
-
-def verify_signature(raw_body: bytes, timestamp: str, signature: str) -> bool:
-    if not SIGNING_SECRET:
-        return False
-    ts = _parse_timestamp(timestamp)
-    if ts == 0.0 or abs(time.time() - ts) > MAX_SKEW_SECONDS:
-        return False
-    msg = timestamp.encode() + b"." + raw_body
-    expected = hmac.new(SIGNING_SECRET, msg, hashlib.sha256).hexdigest()
-    return hmac.compare_digest(expected, signature)
-
 @app.route('/api/receive_temperature', methods=['POST'])
 def receive_temperature():
     """Endpoint to receive temperature data"""
@@ -89,13 +63,11 @@ def receive_temperature():
         #     return jsonify({'status': 'success', 'message': 'Temperature recorded'})
         # else:
         #     return jsonify({'status': 'error', 'message': 'No temperature data provided'}), 400
+        
         raw = request.get_data() or b"{}"
         timestamp = request.headers.get("X-Timestamp", "")
         signature = request.headers.get("X-Signature", "")
         device_id = request.headers.get("X-Device-Id", "unknown")
-    
-        #if not verify_signature(raw, timestamp, signature):
-            #return jsonify({"ok": False, "error": "invalid signature"}), 401
     
         try:
             payload = json.loads(raw.decode("utf-8"))

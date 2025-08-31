@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
     fetchTemperatureData();
     
-    // Auto-refresh every 5 seconds
+    // Auto-refresh every second
     setInterval(fetchTemperatureData, 1000);
 });
 
@@ -110,7 +110,6 @@ function updateCurrentTemperature(current) {
         document.getElementById('current-temp-f').textContent = `${tempC.toFixed(1)}°C`;
     }
     
-//    document.getElementById('last-updated').textContent = formatTime(timestamp);
     document.getElementById('last-updated').textContent = timestamp;
     
     // Update temperature color based on value
@@ -201,23 +200,6 @@ function getTemperatureClass(tempC) {
     if (tempC < 20) return 'temp-cool';
     if (tempC < 30) return 'temp-warm';
     return 'temp-hot';
-}
-
-// Format timestamp for display
-function formatTime(date) {
-    const now = new Date();
-    inDate = new Date(date);
-    const diffMs = now - inDate;
-    const diffSecs = Math.floor(diffMs / 1000);
-    const diffMins = Math.floor(diffSecs / 60);
-    
-    if (diffSecs < 60) {
-        return `${diffSecs} seconds ago`;
-    } else if (diffMins < 60) {
-        return `${diffMins} minutes ago`;
-    } else {
-        return date.toLocaleString();
-    }
 }
 
 // Send temperature reading to server (for integration with sensor)
