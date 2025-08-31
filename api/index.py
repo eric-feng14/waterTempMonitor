@@ -50,8 +50,9 @@ def receive_temperature():
             # Add timestamp and store the reading
             reading = {
                 'c': float(temp_c),
-                'timestamp': datetime.now().isoformat(),
-                'temp_f': float(temp_c) * 9/5 + 32  # Also store Fahrenheit
+                # 'timestamp': datetime.now().isoformat(),
+                'temp_f': float(temp_c) * 9/5 + 32,
+                't': datetime.now().isoformat()
             }
             
             temperature_data.append(reading)
