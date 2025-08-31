@@ -100,8 +100,8 @@ async function fetchTemperatureData() {
 function updateCurrentTemperature(current) {
     const tempC = current.temperature;
     const tempF = current.temp_f;
-    const timestamp = new Date(current.timestamp).toLocaleTimeString;
-    
+    const timestamp = new Date(current.timestamp).toLocaleTimeString();
+
     if (currentUnit === 'C') {
         document.getElementById('current-temp').textContent = tempC.toFixed(1);
         document.getElementById('current-temp-f').textContent = `${tempF.toFixed(1)}°F`;
