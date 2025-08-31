@@ -103,11 +103,11 @@ function updateCurrentTemperature(current) {
     const timestamp = new Date(current.timestamp).toLocaleTimeString();
 
     if (currentUnit === 'C') {
-        document.getElementById('current-temp').textContent = tempC.toFixed(1);
-        document.getElementById('current-temp-f').textContent = `${tempF.toFixed(1)}°F`;
+        document.getElementById('current-temp').textContent = tempC.toFixed(2);
+        document.getElementById('current-temp-f').textContent = `${tempF.toFixed(2)}°F`;
     } else {
-        document.getElementById('current-temp').textContent = tempF.toFixed(1);
-        document.getElementById('current-temp-f').textContent = `${tempC.toFixed(1)}°C`;
+        document.getElementById('current-temp').textContent = tempF.toFixed(2);
+        document.getElementById('current-temp-f').textContent = `${tempC.toFixed(2)}°C`;
     }
     
     document.getElementById('current-time').textContent = timestamp;
@@ -126,9 +126,9 @@ function updateStatistics(stats) {
     const avgTemp = currentUnit === 'C' ? stats.avg : (stats.avg * 9/5 + 32);
     const unit = currentUnit === 'C' ? '°C' : '°F';
     
-    document.getElementById('min-temp').textContent = `${minTemp.toFixed(1)}${unit}`;
-    document.getElementById('max-temp').textContent = `${maxTemp.toFixed(1)}${unit}`;
-    document.getElementById('avg-temp').textContent = `${avgTemp.toFixed(1)}${unit}`;
+    document.getElementById('min-temp').textContent = `${minTemp.toFixed(2)}${unit}`;
+    document.getElementById('max-temp').textContent = `${maxTemp.toFixed(2)}${unit}`;
+    document.getElementById('avg-temp').textContent = `${avgTemp.toFixed(2)}${unit}`;
 }
 
 // Update the temperature chart
