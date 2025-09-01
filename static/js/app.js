@@ -78,7 +78,7 @@ async function fetchTemperatureData() {
     try {
         const response = await fetch('/api/temperature');
         const data = await response.json();
-        const timestamp = new Date(data.current.timestamp).toLocaleTimeString();
+        const timestamp = new Date().toLocaleTimeString();
         document.getElementById('current-time').textContent = timestamp;
         
         if (data.current) {
