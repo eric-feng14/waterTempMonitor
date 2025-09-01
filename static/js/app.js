@@ -78,6 +78,8 @@ async function fetchTemperatureData() {
     try {
         const response = await fetch('/api/temperature');
         const data = await response.json();
+        const timestamp = new Date(current.timestamp).toLocaleTimeString();
+        document.getElementById('current-time').textContent = timestamp;
         
         if (data.current) {
             updateCurrentTemperature(data.current);
@@ -87,7 +89,6 @@ async function fetchTemperatureData() {
         } else {
             document.getElementById('current-temp').textContent = '--';
             document.getElementById('current-temp-f').textContent = '--°F';
-            document.getElementById('current-time').textContent = 'No data available';
             updateStatus('waiting', 0);
         }
     } catch (error) {
@@ -100,7 +101,6 @@ async function fetchTemperatureData() {
 function updateCurrentTemperature(current) {
     const tempC = current.temperature;
     const tempF = current.temp_f;
-    const timestamp = new Date(current.timestamp).toLocaleTimeString();
 
     if (currentUnit === 'C') {
         document.getElementById('current-temp').textContent = tempC.toFixed(2);
@@ -109,8 +109,6 @@ function updateCurrentTemperature(current) {
         document.getElementById('current-temp').textContent = tempF.toFixed(2);
         document.getElementById('current-temp-f').textContent = `${tempC.toFixed(2)}°C`;
     }
-    
-    document.getElementById('current-time').textContent = timestamp;
 }
 
 // Update statistics display
