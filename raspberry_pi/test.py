@@ -5,6 +5,9 @@ import requests
 from datetime import datetime
 import sys
 import signal
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Flask server configuration
 #FLASK_SERVER_URL = "http://192.168.2.34:5000"
@@ -12,9 +15,24 @@ import signal
 FLASK_SERVER_URL = "https://new-church.vercel.app/"
 API_ENDPOINT = f"{FLASK_SERVER_URL}/api/receive_temperature"
 
+# Import email configuration
+try:
+    from email_config import *
+except ImportError:
+    # Fallback configuration if email_config.py doesn't exist
+    EMAIL_ENABLED = True
+    EMAIL_SENDER = "ericfeng242@gmail.com"
+    EMAIL_PASSWORD = "xijs wzcu hdoy tvvc"
+    EMAIL_RECIPIENT = "14ericfeng@gmail.com"
+    SMTP_SERVER = "smtp.gmail.com"
+    SMTP_PORT = 587
+    TEMP_THRESHOLD_C = 30.0
+    EMAIL_COOLDOWN_MINUTES = 30
+
 # Global variables
 spi = None
 running = True
+last_email_sent = None
 
 def signal_handler(sig, frame):
     """Handle graceful shutdown on Ctrl+C"""
@@ -96,6 +114,58 @@ def send_temperature_to_server(temp_c):
         print(f"Error sending data to server: {e}")
         return False
 
+def send_temperature_alert(temp_c, temp_f):
+    """Send email alert when temperature threshold is exceeded"""
+    global last_email_sent
+    
+    if not EMAIL_ENABLED:
+        return False
+    
+    # Check cooldown period
+    if last_email_sent:
+        time_since_last = (datetime.now() - last_email_sent).total_seconds() / 60
+        if time_since_last < EMAIL_COOLDOWN_MINUTES:
+            return False
+    
+    # Parse recipients (support multiple emails separated by commas)
+    recipients = [email.strip() for email in EMAIL_RECIPIENT.split(',')]
+    
+    try:
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = ', '.join(recipients)
+        msg['Subject'] = f"🌡️ Temperature Alert: {temp_c:.1f}°C ({temp_f:.1f}°F)"
+        
+        body = f"""
+Temperature Alert!
+
+The temperature has reached {temp_c:.1f}°C ({temp_f:.1f}°F), 
+which exceeds the threshold of {TEMP_THRESHOLD_C:.1f}°C.
+
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+This is an automated alert from your Raspberry Pi temperature monitoring system.
+        """
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send email
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        text = msg.as_string()
+        server.sendmail(EMAIL_SENDER, recipients, text)
+        server.quit()
+        
+        last_email_sent = datetime.now()
+        print(f"🔥 EMAIL ALERT SENT: {temp_c:.1f}°C to {len(recipients)} recipient(s)")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to send email alert: {e}")
+        return False
+
 def main():
     global running
     
@@ -105,6 +175,17 @@ def main():
     print("Temperature Monitor - MAX6675 Thermocouple Sensor")
     print("=" * 50)
     print(f"Web server URL: {FLASK_SERVER_URL}")
+    
+    # Display email configuration
+    if EMAIL_ENABLED:
+        temp_f_threshold = TEMP_THRESHOLD_C * 9/5 + 32
+        print(f"📧 Email alerts enabled")
+        print(f"   Threshold: {TEMP_THRESHOLD_C:.1f}°C ({temp_f_threshold:.1f}°F)")
+        print(f"   Recipient: {EMAIL_RECIPIENT}")
+        print(f"   Cooldown: {EMAIL_COOLDOWN_MINUTES} minutes")
+    else:
+        print("📧 Email alerts disabled")
+    
     print("Press Ctrl+C to stop\n")
     
     # Initialize SPI
@@ -125,6 +206,10 @@ def main():
             if temp_c is not None:
                 temp_f = temp_c * 9/5 + 32
                 print(f"[{timestamp}] Temperature: {temp_c:.2f}°C ({temp_f:.2f}°F)", end=" ")
+                
+                # Check temperature threshold and send email alert
+                if temp_c >= TEMP_THRESHOLD_C:
+                    send_temperature_alert(temp_c, temp_f)
                 
                 # Send to web server
                 if send_temperature_to_server(temp_c):
