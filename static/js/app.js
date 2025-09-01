@@ -111,10 +111,6 @@ function updateCurrentTemperature(current) {
     }
     
     document.getElementById('current-time').textContent = timestamp;
-    
-    // Update temperature color based on value
-    const tempDisplay = document.querySelector('.temp-display #current-temp');
-    tempDisplay.className = getTemperatureClass(tempC);
 }
 
 // Update statistics display
@@ -192,13 +188,3 @@ function updateStatus(status, dataCount) {
             connectionStatus.className = 'status-value';
     }
 }
-
-// Get CSS class for temperature color coding
-function getTemperatureClass(tempC) {
-    if (tempC < 0) return 'temp-freezing';
-    if (tempC < 10) return 'temp-cold';
-    if (tempC < 20) return 'temp-cool';
-    if (tempC < 30) return 'temp-warm';
-    return 'temp-hot';
-}
-

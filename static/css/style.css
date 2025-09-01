@@ -274,10 +274,3 @@ header h1 {
 .pulse {
     animation: pulse 1s infinite;
 }
-
-/* Temperature color coding */
-.temp-freezing { color: #60a5fa; }  /* blue */
-.temp-cold     { color: #38bdf8; }  /* light blue */
-.temp-cool     { color: #34d399; }  /* green */
-.temp-warm     { color: #fbbf24; }  /* orange */
-.temp-hot      { color: #ef4444; }  /* red */
